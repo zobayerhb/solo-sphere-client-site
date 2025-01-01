@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 const MyPostedJobs = () => {
   const { user } = useContext(AuthContext);
@@ -19,7 +20,50 @@ const MyPostedJobs = () => {
     );
     setJobs(data);
   };
-  console.log(jobs);
+
+  const handleJobDelete = async (id) => {
+    try {
+      const { data } = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/job/${id}`
+      );
+      if (data.deletedCount) {
+        toast.success("Successfully Delete Job");
+      }
+      allJobs();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleConfirmDelete = (id) => {
+    toast((t) => (
+      <div className="flex gap-3 items-center">
+        <div>
+          <p>
+            Are You <b>Sure?</b>
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            className="bg-red-400 text-white px-3 py-1 font-semibold rounded-md"
+            onClick={() => {
+              toast.dismiss(t.id);
+              handleJobDelete(id);
+            }}
+          >
+            Yes
+          </button>
+          <button
+            className="bg-green-400 text-white px-3 py-1 font-semibold rounded-md"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <section className="container px-4 mx-auto pt-12">
       <div className="flex items-center gap-x-3">
@@ -97,7 +141,16 @@ const MyPostedJobs = () => {
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="flex items-center gap-x-2">
                           <p
-                            className={`px-3 py-1  text-blue-500 bg-blue-100/60 text-xs  rounded-full`}
+                            className={`px-3 py-1  ${
+                              job.category === "Web Development" &&
+                              "text-blue-500 bg-blue-100/60"
+                            } ${
+                              job.category === "Graphics Design" &&
+                              "text-red-500 bg-red-100/60"
+                            } ${
+                              job.category === "Digital Marketing" &&
+                              "text-green-500 bg-green-100/60"
+                            } text-xs  rounded-full`}
                           >
                             {job.category}
                           </p>
@@ -108,7 +161,10 @@ const MyPostedJobs = () => {
                       </td>
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="flex items-center gap-x-6">
-                          <button className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none">
+                          <button
+                            onClick={() => handleConfirmDelete(job._id)}
+                            className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none"
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"

@@ -40,10 +40,11 @@ const AddJob = () => {
 
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, formData);
+      form.reset();
       toast.success("Successfully Add Your Job");
       navigate("/my-posted-jobs");
     } catch (error) {
-      console.log(error.message);
+      toast.error(error.message);
     }
   };
 

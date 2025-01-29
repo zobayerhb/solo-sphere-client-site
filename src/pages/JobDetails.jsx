@@ -61,7 +61,17 @@ const JobDetails = () => {
     if (price > max_price)
       return toast.error("price must be equal range price");
 
-    const bidData = { price, email, comment, jobId, deadline: startDate };
+    const bidData = {
+      price,
+      email,
+      comment,
+      jobId,
+      deadline: startDate,
+      title,
+      category,
+      status: "Pending",
+      buyer: buyer?.email,
+    };
     console.log(bidData);
 
     try {

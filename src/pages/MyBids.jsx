@@ -18,8 +18,21 @@ const MyBids = () => {
     setBids(data);
   };
 
-  const handleStatusChange = (id, prevState, currentState) => {
-    console.table({id, prevState, currentState});
+  const handleStatusChange = async (id, prevState, status) => {
+    if (prevState !== "In Progress") return console.log("Action Denied");
+
+    try {
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/bid-state-update/${id}`,
+        { status }
+      );
+      console.log(data);
+
+      // refresh UI
+      fetchAllBids();
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <section className="container px-4 mx-auto my-12">

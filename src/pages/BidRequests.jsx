@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
-import axios from "axios";
 import BidsRequestTable from "../components/BidsRequestTable";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const BidRequests = () => {
+  const axiosSecure = useAxiosSecure();
   const [bids, setBids] = useState([]);
   const { user } = useContext(AuthContext);
   useEffect(() => {
@@ -12,9 +13,7 @@ const BidRequests = () => {
   }, [user?.email]);
 
   const fetchAllBids = async () => {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/bids/${user?.email}?buyer=true`
-    );
+    const { data } = await axiosSecure.get(`/bids/${user?.email}?buyer=true`);
     setBids(data);
   };
 
@@ -24,10 +23,13 @@ const BidRequests = () => {
     console.table({ id, prevState, status });
 
     try {
-      const { data } = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/bid-state-update/${id}`,
-        { status }
-      );
+      // const { data } = await axios.patch(
+      //   `${import.meta.env.VITE_API_URL}/bid-state-update/${id}`,
+      //   { status }
+      // );
+      const { data } = await axiosSecure.patch(`/bid-state-update/${id}`, {
+        status,
+      });
       console.log(data);
 
       // refresh UI

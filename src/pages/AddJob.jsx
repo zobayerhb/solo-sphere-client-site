@@ -2,14 +2,31 @@ import { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../providers/AuthProvider";
-import axios from "axios";
+// import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const AddJob = () => {
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const [startDate, setStartDate] = useState(new Date());
   const { user } = useContext(AuthContext);
+
+  const { isPending, mutateAsync } = useMutation({
+    mutationFn: async (jobAdd) => {
+      await axiosSecure.post(`/add-job`, jobAdd);
+    },
+    onSuccess: () => {
+      QueryClient.invalidateQueries({ queryKey: ["jobs"] });
+      toast.success("Successfully Add Your Job");
+      navigate("/my-posted-jobs");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const handleAddJobs = async (e) => {
     e.preventDefault();
@@ -39,12 +56,18 @@ const AddJob = () => {
     };
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, formData);
+      // data fatch using asyncMutation
+      if (min_price > max_price) {
+        toast.error("priceF");
+        return;
+      }
+      mutateAsync(formData);
+      // form reset
       form.reset();
-      toast.success("Successfully Add Your Job");
-      navigate("/my-posted-jobs");
+      // toast.success("Successfully Add Your Job");
+      // navigate("/my-posted-jobs");
     } catch (error) {
-      toast.error(error.message);
+      // toast.error(error.message);
     }
   };
 
@@ -143,7 +166,7 @@ const AddJob = () => {
           </div>
           <div className="flex justify-end mt-6">
             <button className="disabled:cursor-not-allowed px-8 py-2.5 leading-5 text-white transition-colors duration-300 transhtmlForm bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-              Save
+              {isPending ? "Saving.." : "Save"}
             </button>
           </div>
         </form>

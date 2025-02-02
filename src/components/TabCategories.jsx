@@ -2,20 +2,39 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import JobCard from "./JobCard";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const TabCategories = () => {
-  const [jobs, setJobs] = useState([]);
+  // const [jobs, setJobs] = useState([]);
 
-  useEffect(() => {
-    allJobs();
-  }, []);
+  // useEffect(() => {
+  //   allJobs();
+  // }, []);
+  // const allJobs = async () => {
+  //   const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/jobs`);
+  //   setJobs(data);
+  // };
 
-  const allJobs = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/jobs`);
-    setJobs(data);
-  };
+  const {
+    isPending,
+    isError,
+    data: jobs,
+    error,
+  } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/jobs`);
+      return data;
+    },
+  });
+
+  if (isPending) return <LoadingSpinner></LoadingSpinner>;
+  if (isError) return toast.error(error.message);
+
   return (
     <Tabs>
       <div className=" container px-6 py-10 mx-auto">

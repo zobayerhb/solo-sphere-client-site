@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import BidTable from "../components/BidTable";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const MyBids = () => {
   const [bids, setBids] = useState([]);
@@ -19,7 +20,7 @@ const MyBids = () => {
   };
 
   const handleStatusChange = async (id, prevState, status) => {
-    if (prevState !== "In Progress") return console.log("Action Denied");
+    if (prevState !== "In Progress") return toast.error("Action Denied");
 
     try {
       const { data } = await axios.patch(
@@ -31,7 +32,7 @@ const MyBids = () => {
       // refresh UI
       fetchAllBids();
     } catch (err) {
-      console.log(err);
+      toast.error(err.message);
     }
   };
   return (

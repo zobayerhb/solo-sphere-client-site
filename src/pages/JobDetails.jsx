@@ -72,7 +72,7 @@ const JobDetails = () => {
       status: "Pending",
       buyer: buyer?.email,
     };
-    console.log(bidData);
+    // console.log(bidData);
 
     try {
       const { data } = await axios.post(
@@ -86,7 +86,6 @@ const JobDetails = () => {
       navigate("/my-bids");
       console.log(data);
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data);
     }
   };

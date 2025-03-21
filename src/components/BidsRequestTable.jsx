@@ -3,7 +3,7 @@ import { format } from "date-fns";
 /* eslint-disable react/prop-types */
 const BidsRequestTable = ({ bidReq, handleStatusChange }) => {
   const { title, email, deadline, price, category, status, _id } = bidReq || {};
-  console.log(email);
+  // console.log(email);
   return (
     <tr>
       <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import BidsRequestTable from "../components/BidsRequestTable";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const BidRequests = () => {
   const axiosSecure = useAxiosSecure();
@@ -35,7 +36,7 @@ const BidRequests = () => {
       // refresh UI
       fetchAllBids();
     } catch (err) {
-      console.log(err);
+      toast.error(err.message);
     }
   };
 
